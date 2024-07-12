@@ -44,13 +44,13 @@ public class WarehouseController {
     }
 
     @PostMapping("/products")
-    public String products(@RequestParam List<ProductDTO> productDTOS){
+    public String products(@RequestBody List<ProductDTO> productDTOS){
         warehouseService.saveProducts(productDTOS);
         return "Products processed successfully.";
     }
 
     @PostMapping("/articles")
-    public String articles(@RequestParam List<Article> articles) {
+    public String articles(@RequestBody List<Article> articles) {
         warehouseService.saveArticles(articles);
         return "Articles processed successfully.";
     }
