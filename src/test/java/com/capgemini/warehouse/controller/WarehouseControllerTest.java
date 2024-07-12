@@ -1,24 +1,17 @@
 package com.capgemini.warehouse.controller;
 
-import com.capgemini.warehouse.dto.ArticleDTO;
 import com.capgemini.warehouse.dto.ProductDTO;
 import com.capgemini.warehouse.dto.ProductResponse;
 import com.capgemini.warehouse.dto.SellProductRequest;
 import com.capgemini.warehouse.model.Article;
 import com.capgemini.warehouse.service.WarehouseService;
 import com.capgemini.warehouse.util.TestUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,30 +26,17 @@ public class WarehouseControllerTest {
     @InjectMocks
     private WarehouseController warehouseController;
 
-    private ObjectMapper objectMapper;
-
-    @BeforeEach
-    public void setUp() {
-        objectMapper = new ObjectMapper();
-    }
-
-    private final static String ARTICLE = "ARTICLE";
 
     @Test
     public void test_upload_products() throws Exception {
         // Mocking multipart file
-        ArticleDTO articleDTO = new ArticleDTO("12","1");
-        ProductDTO productDTO = new ProductDTO("product 1", List.of(articleDTO), 20);
-        List<ProductDTO> mockProducts = List.of(productDTO);
-        String mockProductsJson = objectMapper.writeValueAsString(mockProducts);
-        InputStream inputStream = IOUtils.toInputStream(mockProductsJson, "UTF-8");
-        MultipartFile mockMultipartFile = new MockMultipartFile("file", "products.json", "application/json", inputStream);
+        List<ProductDTO> mockProducts = (List<ProductDTO>) TestUtils.getMockMap().get(TestUtils.ObjectType.PRODUCT_DTO);
 
         // Mocking service method
         doNothing().when(warehouseService).saveProducts(mockProducts);
 
         // Call the controller method
-        String response = warehouseController.upload_products(mockMultipartFile);
+        String response = warehouseController.upload_products(TestUtils.createMultipartFile(mockProducts,"products.json"));
 
         // Verify the interactions
         verify(warehouseService, times(1)).saveProducts(mockProducts);
@@ -68,9 +48,7 @@ public class WarehouseControllerTest {
     @Test
     public void test_save_products(){
         // Mocking multipart file
-        ArticleDTO articleDTO = new ArticleDTO("12","1");
-        ProductDTO productDTO = new ProductDTO("product 1", List.of(articleDTO), 20);
-        List<ProductDTO> mockProducts = List.of(productDTO);
+        List<ProductDTO> mockProducts = (List<ProductDTO>) TestUtils.getMockMap().get(TestUtils.ObjectType.PRODUCT_DTO);
 
         // Mocking service method
         doNothing().when(warehouseService).saveProducts(mockProducts);
@@ -82,26 +60,19 @@ public class WarehouseControllerTest {
         verify(warehouseService, times(1)).saveProducts(mockProducts);
 
         assertEquals("Products processed successfully.", response);
-
-
-
-
     }
 
 
     @Test
     public void test_upload_articles() throws Exception {
         // Mocking multipart file
-        List<Article> mockArticle = (List<Article>) TestUtils.getMockMap().get(ARTICLE);
-        String mockArticleJson = objectMapper.writeValueAsString(mockArticle);
-        InputStream inputStream = IOUtils.toInputStream(mockArticleJson, "UTF-8");
-        MultipartFile mockMultipartFile = new MockMultipartFile("file", "inventory.json", "application/json", inputStream);
+        List<Article> mockArticle = (List<Article>) TestUtils.getMockMap().get(TestUtils.ObjectType.ARTICLE);
 
         // Mocking service method
         doNothing().when(warehouseService).saveArticles(mockArticle);
 
         // Call the controller method
-        String response = warehouseController.upload_articles(mockMultipartFile);
+        String response = warehouseController.upload_articles(TestUtils.createMultipartFile(mockArticle,"inventory.json"));
 
         // Verify the interactions
         verify(warehouseService, times(1)).saveArticles(mockArticle);
@@ -114,7 +85,7 @@ public class WarehouseControllerTest {
     @Test
     public void test_save_articles() {
         // Mocking multipart file
-        List<Article> mockArticle = (List<Article>) TestUtils.getMockMap().get(ARTICLE);
+        List<Article> mockArticle = (List<Article>) TestUtils.getMockMap().get(TestUtils.ObjectType.ARTICLE);
 
         // Mocking service method
         doNothing().when(warehouseService).saveArticles(mockArticle);

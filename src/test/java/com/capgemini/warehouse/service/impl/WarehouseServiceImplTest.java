@@ -47,23 +47,16 @@ class WarehouseServiceImplTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    private final static String PRODUCT = "PRODUCT";
-    private final static String ARTICLE = "ARTICLE";
-    private final static String PRODUCT_1_ARTICLE = "PRODUCT_1_ARTICLE";
-    private final static String PRODUCT_2_ARTICLE = "PRODUCT_2_ARTICLE";
-
-
-
     @Test
     void getProducts() {
         // Mock data
-        Map<String, Object> productInventoryMockMap = TestUtils.getMockMap();
+        Map<TestUtils.ObjectType, Object> productInventoryMockMap = TestUtils.getMockMap();
 
         // Mocking the repository method
-        when(articleRepository.findAll()).thenReturn((List<Article>) productInventoryMockMap.get(ARTICLE));
-        when(productRepository.findAll()).thenReturn((List<Product>) productInventoryMockMap.get(PRODUCT));
-        when(productArticleRepository.findByProduct(((List<Product>) productInventoryMockMap.get(PRODUCT)).get(0))).thenReturn((List<ProductArticle>)productInventoryMockMap.get(PRODUCT_1_ARTICLE));
-        when(productArticleRepository.findByProduct(((List<Product>) productInventoryMockMap.get(PRODUCT)).get(1))).thenReturn((List<ProductArticle>)productInventoryMockMap.get(PRODUCT_2_ARTICLE));
+        when(articleRepository.findAll()).thenReturn((List<Article>) productInventoryMockMap.get(TestUtils.ObjectType.ARTICLE));
+        when(productRepository.findAll()).thenReturn((List<Product>) productInventoryMockMap.get(TestUtils.ObjectType.PRODUCT));
+        when(productArticleRepository.findByProduct(((List<Product>) productInventoryMockMap.get(TestUtils.ObjectType.PRODUCT)).get(0))).thenReturn((List<ProductArticle>)productInventoryMockMap.get(TestUtils.ObjectType.PRODUCT_1_ARTICLE));
+        when(productArticleRepository.findByProduct(((List<Product>) productInventoryMockMap.get(TestUtils.ObjectType.PRODUCT)).get(1))).thenReturn((List<ProductArticle>)productInventoryMockMap.get(TestUtils.ObjectType.PRODUCT_2_ARTICLE));
 
         // Call the service method
         List<ProductResponse> result = warehouseService.getProducts();
@@ -79,16 +72,15 @@ class WarehouseServiceImplTest {
     @Test
     void sellProduct() {
         // Mock data
-        Map<String,Object> map = TestUtils.getMockMap();
-        Product product = ((List<Product>)map.get(PRODUCT)).get(0);
+        Map<TestUtils.ObjectType,Object> map = TestUtils.getMockMap();
+        Product product = ((List<Product>)map.get(TestUtils.ObjectType.PRODUCT)).get(0);
         List<SellProductRequest> requestList = List.of(new SellProductRequest(1L, 1));
-
-        List<Article> articles = (List<Article>)map.get(ARTICLE);
+        List<Article> articles = (List<Article>)map.get(TestUtils.ObjectType.ARTICLE);
 
         // Mocking repository methods
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
         when(articleRepository.findAll()).thenReturn(articles);
-        when(productArticleRepository.findByProduct(product)).thenReturn((List<ProductArticle>)map.get(PRODUCT_1_ARTICLE));
+        when(productArticleRepository.findByProduct(product)).thenReturn((List<ProductArticle>)map.get(TestUtils.ObjectType.PRODUCT_1_ARTICLE));
 
         // Call the service method
         warehouseService.sellProduct(requestList);
@@ -105,16 +97,15 @@ class WarehouseServiceImplTest {
     @Test
     void sellProductWithLessInventory() {
         // Mock data
-        Map<String,Object> map = TestUtils.getMockMap();
-        Product product = ((List<Product>)map.get(PRODUCT)).get(0);
+        Map<TestUtils.ObjectType,Object> map = TestUtils.getMockMap();
+        Product product = ((List<Product>)map.get(TestUtils.ObjectType.PRODUCT)).get(0);
+        List<Article> articles = (List<Article>)map.get(TestUtils.ObjectType.ARTICLE);
         List<SellProductRequest> requestList = List.of(new SellProductRequest(1L, 200));
-
-        List<Article> articles = (List<Article>)map.get(ARTICLE);
 
         // Mocking repository methods
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
         when(articleRepository.findAll()).thenReturn(articles);
-        when(productArticleRepository.findByProduct(product)).thenReturn((List<ProductArticle>)map.get(PRODUCT_1_ARTICLE));
+        when(productArticleRepository.findByProduct(product)).thenReturn((List<ProductArticle>)map.get(TestUtils.ObjectType.PRODUCT_1_ARTICLE));
 
         // Call the service method
         assertThrows(InsufficientStockException.class,() -> warehouseService.sellProduct(requestList));
@@ -128,8 +119,11 @@ class WarehouseServiceImplTest {
     @Test
     void saveArticles() {
         // Mock data
-        Map<String,Object> map = TestUtils.getMockMap();
-        List<Article> articles = (List<Article>)map.get(ARTICLE);
+        Map<TestUtils.ObjectType,Object> map = TestUtils.getMockMap();
+        List<Article> articles = (List<Article>)map.get(TestUtils.ObjectType.ARTICLE);
+
+        // Mocking repository methods
+        when(articleRepository.findAll()).thenReturn(articles);
 
         // Call the service method
         warehouseService.saveArticles(articles);
@@ -141,10 +135,10 @@ class WarehouseServiceImplTest {
     @Test
     void saveProducts() {
         // Mock data
-        Map<String,Object> map = TestUtils.getMockMap();
+        Map<TestUtils.ObjectType,Object> map = TestUtils.getMockMap();
         List<ProductDTO> productDTOS = new ArrayList<>();
-        List<Article> articles = (List<Article>)map.get(ARTICLE);
-        List<Product> products = ((List<Product>)map.get(PRODUCT));
+        List<Article> articles = (List<Article>)map.get(TestUtils.ObjectType.ARTICLE);
+        List<Product> products = ((List<Product>)map.get(TestUtils.ObjectType.PRODUCT));
 
         // Mock repository methods as needed
         when(articleRepository.findAll()).thenReturn(articles);

@@ -49,6 +49,12 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Transactional
     public void saveArticles(List<Article> articles) {
+        Map<Long,Article> articleMap = this.getArticleMap(articleRepository.findAll());
+        for (Article article : articles) {
+            if (articleMap.containsKey(article.getArt_id())) {
+                article.setStock(articleMap.get(article.getArt_id()).getStock() + article.getStock());
+            }
+        }
         articleRepository.saveAll(articles);
     }
 
