@@ -40,19 +40,19 @@ public class WarehouseController {
         List<Article> articles = objectMapper.readValue(multipartFile.getInputStream(),
                 new TypeReference<>() {});
         warehouseService.saveArticles(articles);
-        return "articles JSON file processed successfully.";
+        return "Articles JSON file processed successfully.";
     }
 
     @PostMapping("/products")
     public String products(@RequestParam List<ProductDTO> productDTOS){
         warehouseService.saveProducts(productDTOS);
-        return "Products JSON file processed successfully.";
+        return "Products processed successfully.";
     }
 
     @PostMapping("/articles")
     public String articles(@RequestParam List<Article> articles) {
         warehouseService.saveArticles(articles);
-        return "articles JSON file processed successfully.";
+        return "Articles processed successfully.";
     }
 
     @GetMapping("/getProducts")

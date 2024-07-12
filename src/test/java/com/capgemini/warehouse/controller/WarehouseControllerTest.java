@@ -12,7 +12,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -41,13 +40,10 @@ public class WarehouseControllerTest {
         objectMapper = new ObjectMapper();
     }
 
-    private final static String PRODUCT = "PRODUCT";
     private final static String ARTICLE = "ARTICLE";
-    private final static String PRODUCT_1_ARTICLE = "PRODUCT_1_ARTICLE";
-    private final static String PRODUCT_2_ARTICLE = "PRODUCT_2_ARTICLE";
 
     @Test
-    public void testSaveProducts() throws Exception {
+    public void test_upload_products() throws Exception {
         // Mocking multipart file
         ArticleDTO articleDTO = new ArticleDTO("12","1");
         ProductDTO productDTO = new ProductDTO("product 1", List.of(articleDTO), 20);
@@ -57,19 +53,44 @@ public class WarehouseControllerTest {
         MultipartFile mockMultipartFile = new MockMultipartFile("file", "products.json", "application/json", inputStream);
 
         // Mocking service method
-        doNothing().when(warehouseService).saveProducts(ArgumentMatchers.any(List.class));
+        doNothing().when(warehouseService).saveProducts(mockProducts);
 
         // Call the controller method
         String response = warehouseController.upload_products(mockMultipartFile);
 
         // Verify the interactions
-        verify(warehouseService, times(1)).saveProducts(ArgumentMatchers.any(List.class));
+        verify(warehouseService, times(1)).saveProducts(mockProducts);
+
+        assertEquals("Products JSON file processed successfully.", response);
+
+    }
+
+    @Test
+    public void test_save_products(){
+        // Mocking multipart file
+        ArticleDTO articleDTO = new ArticleDTO("12","1");
+        ProductDTO productDTO = new ProductDTO("product 1", List.of(articleDTO), 20);
+        List<ProductDTO> mockProducts = List.of(productDTO);
+
+        // Mocking service method
+        doNothing().when(warehouseService).saveProducts(mockProducts);
+
+        // Call the controller method
+        String response = warehouseController.products(mockProducts);
+
+        // Verify the interactions
+        verify(warehouseService, times(1)).saveProducts(mockProducts);
+
+        assertEquals("Products processed successfully.", response);
+
+
+
 
     }
 
 
     @Test
-    public void testSaveArticles() throws Exception {
+    public void test_upload_articles() throws Exception {
         // Mocking multipart file
         List<Article> mockArticle = (List<Article>) TestUtils.getMockMap().get(ARTICLE);
         String mockArticleJson = objectMapper.writeValueAsString(mockArticle);
@@ -77,21 +98,43 @@ public class WarehouseControllerTest {
         MultipartFile mockMultipartFile = new MockMultipartFile("file", "inventory.json", "application/json", inputStream);
 
         // Mocking service method
-        doNothing().when(warehouseService).saveArticles(ArgumentMatchers.any(List.class));
+        doNothing().when(warehouseService).saveArticles(mockArticle);
 
         // Call the controller method
         String response = warehouseController.upload_articles(mockMultipartFile);
 
         // Verify the interactions
-        verify(warehouseService, times(1)).saveArticles(ArgumentMatchers.any(List.class));
+        verify(warehouseService, times(1)).saveArticles(mockArticle);
+
+        assertEquals("Articles JSON file processed successfully.", response);
+
+
+    }
+
+    @Test
+    public void test_save_articles() {
+        // Mocking multipart file
+        List<Article> mockArticle = (List<Article>) TestUtils.getMockMap().get(ARTICLE);
+
+        // Mocking service method
+        doNothing().when(warehouseService).saveArticles(mockArticle);
+
+        // Call the controller method
+        String response = warehouseController.articles(mockArticle);
+
+        // Verify the interactions
+        verify(warehouseService, times(1)).saveArticles(mockArticle);
+
+        assertEquals("Articles processed successfully.", response);
+
 
     }
 
     @Test
     void testGetProducts() {
         // Mock data
-        ProductResponse product1 = new ProductResponse(1,"p1",4);
-        ProductResponse product2 = new ProductResponse(2,"p2",5);
+        ProductResponse product1 = new ProductResponse(1,"dining chair",4);
+        ProductResponse product2 = new ProductResponse(2,"dining table",5);
         List<ProductResponse> productList = List.of(product1, product2);
 
         // Mocking the service method
@@ -102,16 +145,15 @@ public class WarehouseControllerTest {
 
         // Verify the result
         assertEquals(2, result.size());
-        assertEquals("p1", result.get(0).getName());
-        assertEquals("p2", result.get(1).getName());
+        assertEquals("dining chair", result.get(0).getName());
+        assertEquals("dining table", result.get(1).getName());
     }
 
     @Test
     void testSellProduct() {
         // Mock data
-        SellProductRequest request1 = new SellProductRequest(1, 1);
-        SellProductRequest request2 = new SellProductRequest(2, 1);
-        List<SellProductRequest> requestList = List.of(request1, request2);
+        SellProductRequest request1 = new SellProductRequest(1L, 1L);
+        List<SellProductRequest> requestList = List.of(request1);
 
         // Call the controller method
         String result = warehouseController.sellProduct(requestList);
