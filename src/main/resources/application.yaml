@@ -1,23 +1,17 @@
+logging:
+  level:
+    root: INFO
+    com:
+      capgemini:
+        warehouse: INFO
 spring:
   application:
     name: warehouse
   datasource:
-    url: jdbc:mysql://localhost:3333/test
+    url: 'jdbc:mysql://localhost:3333/test'
     username: root
     password: root
-
   jpa:
     hibernate:
       ddl-auto: update
       show-sql: false
-
-logging:
-  level:
-    com:
-      capgemini: INFO
-
-#spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-
-# Hibernate properties
-#spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
-#spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
