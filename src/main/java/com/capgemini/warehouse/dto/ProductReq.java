@@ -8,11 +8,11 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductDTO {
+public class ProductReq {
 
     private String name;
     @JsonProperty("articles")
-    private List<ArticleDTO> articles;
+    private List<ArticleReq> articles;
     private double price;
 
 

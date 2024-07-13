@@ -1,8 +1,8 @@
 package com.capgemini.warehouse.controller;
 
-import com.capgemini.warehouse.dto.ProductDTO;
-import com.capgemini.warehouse.dto.ProductResponse;
-import com.capgemini.warehouse.dto.SellProductRequest;
+import com.capgemini.warehouse.dto.ProductReq;
+import com.capgemini.warehouse.dto.ProductRes;
+import com.capgemini.warehouse.dto.SellProductReq;
 import com.capgemini.warehouse.model.Article;
 import com.capgemini.warehouse.service.WarehouseService;
 import com.capgemini.warehouse.util.TestUtils;
@@ -30,7 +30,7 @@ public class WarehouseControllerTest {
     @Test
     public void test_upload_products() throws Exception {
         // Mocking multipart file
-        List<ProductDTO> mockProducts = (List<ProductDTO>) TestUtils.getMockMap().get(TestUtils.ObjectType.PRODUCT_DTO);
+        List<ProductReq> mockProducts = (List<ProductReq>) TestUtils.getMockMap().get(TestUtils.ObjectType.PRODUCT_DTO);
 
         // Mocking service method
         doNothing().when(warehouseService).saveProducts(mockProducts);
@@ -48,7 +48,7 @@ public class WarehouseControllerTest {
     @Test
     public void test_save_products(){
         // Mocking multipart file
-        List<ProductDTO> mockProducts = (List<ProductDTO>) TestUtils.getMockMap().get(TestUtils.ObjectType.PRODUCT_DTO);
+        List<ProductReq> mockProducts = (List<ProductReq>) TestUtils.getMockMap().get(TestUtils.ObjectType.PRODUCT_DTO);
 
         // Mocking service method
         doNothing().when(warehouseService).saveProducts(mockProducts);
@@ -104,15 +104,15 @@ public class WarehouseControllerTest {
     @Test
     void testGetProducts() {
         // Mock data
-        ProductResponse product1 = new ProductResponse(1,"dining chair",4);
-        ProductResponse product2 = new ProductResponse(2,"dining table",5);
-        List<ProductResponse> productList = List.of(product1, product2);
+        ProductRes product1 = new ProductRes(1,"dining chair",4);
+        ProductRes product2 = new ProductRes(2,"dining table",5);
+        List<ProductRes> productList = List.of(product1, product2);
 
         // Mocking the service method
         when(warehouseService.getProducts()).thenReturn(productList);
 
         // Call the controller method
-        List<ProductResponse> result = warehouseController.getProducts();
+        List<ProductRes> result = warehouseController.getProducts();
 
         // Verify the result
         assertEquals(2, result.size());
@@ -123,8 +123,8 @@ public class WarehouseControllerTest {
     @Test
     void testSellProduct() {
         // Mock data
-        SellProductRequest request1 = new SellProductRequest(1L, 1L);
-        List<SellProductRequest> requestList = List.of(request1);
+        SellProductReq request1 = new SellProductReq(1L, 1L);
+        List<SellProductReq> requestList = List.of(request1);
 
         // Call the controller method
         String result = warehouseController.sellProduct(requestList);

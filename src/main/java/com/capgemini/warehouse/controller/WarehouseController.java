@@ -1,9 +1,9 @@
 package com.capgemini.warehouse.controller;
 
 
-import com.capgemini.warehouse.dto.ProductDTO;
-import com.capgemini.warehouse.dto.ProductResponse;
-import com.capgemini.warehouse.dto.SellProductRequest;
+import com.capgemini.warehouse.dto.ProductReq;
+import com.capgemini.warehouse.dto.ProductRes;
+import com.capgemini.warehouse.dto.SellProductReq;
 import com.capgemini.warehouse.model.Article;
 import com.capgemini.warehouse.service.WarehouseService;
 import com.capgemini.warehouse.util.WarehouseUtility;
@@ -28,7 +28,7 @@ public class WarehouseController {
     @PostMapping("/upload/products")
     public String upload_products(@RequestParam("file") MultipartFile multipartFile) throws IOException {
         WarehouseUtility.validateFile(multipartFile);
-        List<ProductDTO> products = objectMapper.readValue(multipartFile.getInputStream(),
+        List<ProductReq> products = objectMapper.readValue(multipartFile.getInputStream(),
                 new TypeReference<>() {});
         warehouseService.saveProducts(products);
         return "Products JSON file processed successfully.";
@@ -44,8 +44,8 @@ public class WarehouseController {
     }
 
     @PostMapping("/products")
-    public String products(@RequestBody List<ProductDTO> productDTOS){
-        warehouseService.saveProducts(productDTOS);
+    public String products(@RequestBody List<ProductReq> productReqs){
+        warehouseService.saveProducts(productReqs);
         return "Products processed successfully.";
     }
 
@@ -56,12 +56,12 @@ public class WarehouseController {
     }
 
     @GetMapping("/getProducts")
-    public List<ProductResponse> getProducts() {
+    public List<ProductRes> getProducts() {
         return warehouseService.getProducts();
     }
 
     @PostMapping("/sell")
-    public String sellProduct(@RequestBody List<SellProductRequest> request) {
+    public String sellProduct(@RequestBody List<SellProductReq> request) {
         warehouseService.sellProduct(request);
         return "Product sold successfully.";
     }

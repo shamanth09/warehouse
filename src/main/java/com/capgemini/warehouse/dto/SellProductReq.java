@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data@AllArgsConstructor
-public class SellProductRequest {
+public class SellProductReq {
     private long productId;
     private long quantity;
 }

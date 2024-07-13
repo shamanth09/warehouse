@@ -3,9 +3,9 @@ package com.capgemini.warehouse.service.impl;
 import com.capgemini.warehouse.data.ArticleRepository;
 import com.capgemini.warehouse.data.ProductArticleRepository;
 import com.capgemini.warehouse.data.ProductRepository;
-import com.capgemini.warehouse.dto.ProductDTO;
-import com.capgemini.warehouse.dto.ProductResponse;
-import com.capgemini.warehouse.dto.SellProductRequest;
+import com.capgemini.warehouse.dto.ProductReq;
+import com.capgemini.warehouse.dto.ProductRes;
+import com.capgemini.warehouse.dto.SellProductReq;
 import com.capgemini.warehouse.exception.InsufficientStockException;
 import com.capgemini.warehouse.model.Article;
 import com.capgemini.warehouse.model.Product;
@@ -59,7 +59,7 @@ class WarehouseServiceImplTest {
         when(productArticleRepository.findByProduct(((List<Product>) productInventoryMockMap.get(TestUtils.ObjectType.PRODUCT)).get(1))).thenReturn((List<ProductArticle>)productInventoryMockMap.get(TestUtils.ObjectType.PRODUCT_2_ARTICLE));
 
         // Call the service method
-        List<ProductResponse> result = warehouseService.getProducts();
+        List<ProductRes> result = warehouseService.getProducts();
 
         // Verify the result
         assertEquals(2, result.size());
@@ -74,7 +74,7 @@ class WarehouseServiceImplTest {
         // Mock data
         Map<TestUtils.ObjectType,Object> map = TestUtils.getMockMap();
         Product product = ((List<Product>)map.get(TestUtils.ObjectType.PRODUCT)).get(0);
-        List<SellProductRequest> requestList = List.of(new SellProductRequest(1L, 1));
+        List<SellProductReq> requestList = List.of(new SellProductReq(1L, 1));
         List<Article> articles = (List<Article>)map.get(TestUtils.ObjectType.ARTICLE);
 
         // Mocking repository methods
@@ -100,7 +100,7 @@ class WarehouseServiceImplTest {
         Map<TestUtils.ObjectType,Object> map = TestUtils.getMockMap();
         Product product = ((List<Product>)map.get(TestUtils.ObjectType.PRODUCT)).get(0);
         List<Article> articles = (List<Article>)map.get(TestUtils.ObjectType.ARTICLE);
-        List<SellProductRequest> requestList = List.of(new SellProductRequest(1L, 200));
+        List<SellProductReq> requestList = List.of(new SellProductReq(1L, 200));
 
         // Mocking repository methods
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
@@ -136,7 +136,7 @@ class WarehouseServiceImplTest {
     void saveProducts() {
         // Mock data
         Map<TestUtils.ObjectType,Object> map = TestUtils.getMockMap();
-        List<ProductDTO> productDTOS = new ArrayList<>();
+        List<ProductReq> productReqs = new ArrayList<>();
         List<Article> articles = (List<Article>)map.get(TestUtils.ObjectType.ARTICLE);
         List<Product> products = ((List<Product>)map.get(TestUtils.ObjectType.PRODUCT));
 
@@ -145,7 +145,7 @@ class WarehouseServiceImplTest {
         when(productRepository.saveAll(any())).thenReturn(products);
 
         // Call the service method
-        warehouseService.saveProducts(productDTOS);
+        warehouseService.saveProducts(productReqs);
 
         // Verify repository method invocation
         verify(productRepository).saveAll(any());

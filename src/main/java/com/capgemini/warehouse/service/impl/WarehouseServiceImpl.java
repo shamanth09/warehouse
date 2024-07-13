@@ -3,10 +3,10 @@ package com.capgemini.warehouse.service.impl;
 import com.capgemini.warehouse.data.ArticleRepository;
 import com.capgemini.warehouse.data.ProductArticleRepository;
 import com.capgemini.warehouse.data.ProductRepository;
-import com.capgemini.warehouse.dto.ArticleDTO;
-import com.capgemini.warehouse.dto.ProductDTO;
-import com.capgemini.warehouse.dto.ProductResponse;
-import com.capgemini.warehouse.dto.SellProductRequest;
+import com.capgemini.warehouse.dto.ArticleReq;
+import com.capgemini.warehouse.dto.ProductReq;
+import com.capgemini.warehouse.dto.ProductRes;
+import com.capgemini.warehouse.dto.SellProductReq;
 import com.capgemini.warehouse.exception.ArticleNotPresentException;
 import com.capgemini.warehouse.exception.InsufficientStockException;
 import com.capgemini.warehouse.exception.NoSuchProductException;
@@ -34,16 +34,16 @@ public class WarehouseServiceImpl implements WarehouseService {
     private ProductArticleRepository productArticleRepository;
 
 
-    public List<ProductResponse> getProducts() {
+    public List<ProductRes> getProducts() {
         return producible_Product(productRepository.findAll(), articleRepository.findAll());
     }
 
 
     @Transactional
-    public void sellProduct(List<SellProductRequest> sellProductRequests) {
-        for(SellProductRequest sellProductRequest : sellProductRequests) {
-            Product product = productRepository.findById(sellProductRequest.getProductId()).orElseThrow(() -> new NoSuchProductException("requested product is not found"));
-            validateStockAvailabilityAndUpdate(productArticleRepository.findByProduct(product), sellProductRequest.getQuantity());
+    public void sellProduct(List<SellProductReq> sellProductReqs) {
+        for(SellProductReq sellProductReq : sellProductReqs) {
+            Product product = productRepository.findById(sellProductReq.getProductId()).orElseThrow(() -> new NoSuchProductException("requested product is not found"));
+            validateStockAvailabilityAndUpdate(productArticleRepository.findByProduct(product), sellProductReq.getQuantity());
         }
     }
 
@@ -59,27 +59,27 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Transactional
-    public void saveProducts(List<ProductDTO> productDTOS) {
-        saveProductsToRepository(validateProduct(productDTOS));
+    public void saveProducts(List<ProductReq> productReqs) {
+        saveProductsToRepository(validateProduct(productReqs));
     }
 
-    private void saveProductsToRepository(List<ProductDTO> productDTOS) {
+    private void saveProductsToRepository(List<ProductReq> productReqs) {
         List<Product> products = new ArrayList<>();
         List<ProductArticle> productArticles = new ArrayList<>();
         Map<Long, Article> articleMap = getArticleMap(articleRepository.findAll());
-        for (ProductDTO productDTO : productDTOS) {
+        for (ProductReq productReq : productReqs) {
             Product product = new Product();
-            product.setName(productDTO.getName());
-            product.setPrice(productDTO.getPrice());
+            product.setName(productReq.getName());
+            product.setPrice(productReq.getPrice());
             products.add(product);
-            for (ArticleDTO articleDTO : productDTO.getArticles()){
+            for (ArticleReq articleReq : productReq.getArticles()){
                 ProductArticle productArticle = new ProductArticle();
                 productArticle.setProduct(product);
-                Article article = articleMap.get(Long.parseLong(articleDTO.getArt_id()));
+                Article article = articleMap.get(Long.parseLong(articleReq.getArt_id()));
                 if(article == null)
                     throw new ArticleNotPresentException("requested article is not found");
                 productArticle.setArticle(article);
-                productArticle.setQuantity(Integer.parseInt(articleDTO.getAmount_of()));
+                productArticle.setQuantity(Integer.parseInt(articleReq.getAmount_of()));
                 productArticles.add(productArticle);
             }
         }
@@ -108,27 +108,27 @@ public class WarehouseServiceImpl implements WarehouseService {
         }
     }
 
-    private List<ProductDTO> validateProduct(List<ProductDTO> products) {
-        List<ProductDTO> productDTOS = new ArrayList<>();
-        List<ProductDTO> duplicateProductDTOS = new ArrayList<>();
+    private List<ProductReq> validateProduct(List<ProductReq> products) {
+        List<ProductReq> productReqs = new ArrayList<>();
+        List<ProductReq> duplicateProductReqs = new ArrayList<>();
 
-        for(ProductDTO productDTO : products){
-            Optional<Product> product = productRepository.findByName(productDTO.getName().toLowerCase());
+        for(ProductReq productReq : products){
+            Optional<Product> product = productRepository.findByName(productReq.getName().toLowerCase());
             if(product.isEmpty()){
-                productDTOS.add(productDTO);
+                productReqs.add(productReq);
             }else{
-                duplicateProductDTOS.add(productDTO);
+                duplicateProductReqs.add(productReq);
             }
         }
-        processDuplicateProducts(duplicateProductDTOS);
-        return productDTOS;
+        processDuplicateProducts(duplicateProductReqs);
+        return productReqs;
     }
 
-    private List<ProductResponse> producible_Product(List<Product> products, List<Article> articles) {
-        List<ProductResponse> productResponses = new ArrayList<>();
+    private List<ProductRes> producible_Product(List<Product> products, List<Article> articles) {
+        List<ProductRes> productResponses = new ArrayList<>();
         Map<Long, Article> articleMap = getArticleMap(articles);
         for (Product product : products) {
-            ProductResponse productResponse = new ProductResponse();
+            ProductRes productResponse = new ProductRes();
             List<ProductArticle> productArticles = productArticleRepository.findByProduct(product);
             long minProductCount = Integer.MAX_VALUE;
             for (ProductArticle productArticle : productArticles) {
@@ -150,7 +150,7 @@ public class WarehouseServiceImpl implements WarehouseService {
         return articles.parallelStream().collect(Collectors.toMap(Article::getArt_id, article -> article));
     }
 
-    private void processDuplicateProducts(List<ProductDTO> duplicateProductDTOS) {
+    private void processDuplicateProducts(List<ProductReq> duplicateProductReqs) {
         //todo : process duplicate products and return to client as unprocessed as duplicate.
     }
 }

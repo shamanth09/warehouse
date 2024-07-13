@@ -1,7 +1,7 @@
 package com.capgemini.warehouse.util;
 
-import com.capgemini.warehouse.dto.ArticleDTO;
-import com.capgemini.warehouse.dto.ProductDTO;
+import com.capgemini.warehouse.dto.ArticleReq;
+import com.capgemini.warehouse.dto.ProductReq;
 import com.capgemini.warehouse.model.Article;
 import com.capgemini.warehouse.model.Product;
 import com.capgemini.warehouse.model.ProductArticle;
@@ -54,9 +54,9 @@ public class TestUtils {
         ProductArticle productArticle6 = new ProductArticle(1L, product2, article4, 1);
         map.put(ObjectType.PRODUCT_2_ARTICLE ,List.of(productArticle4,productArticle5,productArticle6));
 
-        ArticleDTO articleDTO = new ArticleDTO("12","1");
-        ProductDTO productDTO = new ProductDTO("product 1", List.of(articleDTO), 20);
-        map.put(ObjectType.PRODUCT_DTO, List.of(productDTO));
+        ArticleReq articleReq = new ArticleReq("12","1");
+        ProductReq productReq = new ProductReq("product 1", List.of(articleReq), 20);
+        map.put(ObjectType.PRODUCT_DTO, List.of(productReq));
 
         return map;
     }
